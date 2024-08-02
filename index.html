@@ -1,0 +1,41 @@
+
+# Registration form
+from django import forms
+from .models import User
+
+class RegistrationForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password', 'confirm_password')
+
+# Login form
+class LoginForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
+
+# File upload form
+from django import forms
+from .models import File
+
+class FileUploadForm(forms.ModelForm):
+    class Meta:
+        model = File
+        fields = ('name', 'file')
+
+# File upload view
+from django.shortcuts import render, redirect
+from .forms import FileUploadForm
+
+def upload_file(request):
+    if request.method == 'POST':
+        form = FileUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('file_list')
+    else:
+        form = FileUploadForm()
+    return render(request, 'upload_file.html', {'form': form})
+
